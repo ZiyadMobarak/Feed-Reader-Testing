@@ -95,9 +95,8 @@ $(function() {
      */
     it('is hidden by default', function() {
       //Check that the class "menu-hidden" is part of the body class be default
-      var bodyClass = $('body').attr("class");
-      var isHidden = bodyClass.indexOf("menu-hidden");
-      expect(isHidden).not.toBeLessThan(0); //This means that "menu-hidden" is one of the classes in the body
+      var isHidden = $('body').hasClass("menu-hidden");
+      expect(isHidden).toBe(true);
     });
 
     /* A test that ensures the menu changes
@@ -109,15 +108,14 @@ $(function() {
       var spyEvent = spyOnEvent(".menu-icon-link", "click"); //Listen to the menu icon
       $('.menu-icon-link').click(); //Click the menu icon
       expect('click').toHaveBeenTriggeredOn('.menu-icon-link'); //Check that is has been clicked the menu icon
-      var bodyClass = $('body').attr("class");
-      var isHidden = bodyClass.indexOf("menu-hidden"); //Check for the menu-hidden class
-      expect(isHidden).toBeLessThan(0); //Less than 0 means "menu-hidden" doesn't appear in the class
+      var isHidden = $('body').hasClass("menu-hidden"); //Check for the menu-hidden class
+      expect(isHidden).toBe(false);
 
       //Repeat the above and check that the "menu-hidden" class is returned to the body
       $('.menu-icon-link').click(); //Click the menu icon again
-      bodyClass = $('body').attr("class"); //Get the new body tag after the second click
-      isHidden = bodyClass.indexOf("menu-hidden"); //Check for the menu-hidden class
-      expect(isHidden).not.toBeLessThan(0); //Less than 0 means "menu-hidden" doesn't appear in the class
+      expect('click').toHaveBeenTriggeredOn('.menu-icon-link'); //Check that is has been clicked the menu icon
+      isHidden = $('body').hasClass("menu-hidden"); //Check for the menu-hidden class
+      expect(isHidden).toBe(true);
     });
   });
   //---------------------------------------------------------------------------
@@ -145,8 +143,9 @@ $(function() {
      * the use of Jasmine's beforeEach and asynchronous done() function.
      */
     it('are loaded successfully', function(done) {
-      var container = $('.feed'); //Get the feed container
-      var childrenCount = container.children().length; //Get how many children are there in the container
+      var container = $('.feed .entry'); //Get the feed container
+      var childrenCount = container.length; //Get how many children are there in the container
+      console.log("Initial Loads = " + childrenCount);
       expect(childrenCount).not.toBeLessThan(1); //The number of children shouldn't be less than 1 (at least 1)
       done();
     });
@@ -166,22 +165,17 @@ $(function() {
     var firstFeedContent;
     var secondFeedContent;
 
-    //This will load the first feeds before performing any test and store its results
+    //This nested functions will load all required feeds before performing the required testing
     beforeEach(function(done) {
       loadFeed(0, function() {
         // Get the numbre of children for the first feed and its content
         var firstFeedContainer = $('.feed'); //Get the feed container
         firstFeedContent = firstFeedContainer.children().text(); //Get all children elements
-        done();
-      });
-    });
-
-    //This will load the second feeds before performing any test and store its results
-    beforeEach(function(done) {
-      loadFeed(1, function() {
-        var secondFeedContainer = $('.feed'); //Get the feed container
-        secondFeedContent = secondFeedContainer.children().text(); //Get all children elements
-        done();
+        loadFeed(1, function() {
+          var secondFeedContainer = $('.feed'); //Get the feed container
+          secondFeedContent = secondFeedContainer.children().text(); //Get all children elements
+          done();
+        });
       });
     });
 
